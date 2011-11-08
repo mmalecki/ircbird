@@ -16,6 +16,9 @@
   , "dnode": "*"
   , "cradle": "*"
   , "password-hash": "*"
+  , "equality": "*"
+  , "ignoring-deep-equals": "*"
+  , "hat": "*"
   },
   "devDependencies": {}
 }
