@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "irc": "*"
-  , "express": "*"
+  , "node-static": "git://github.com/Marak/node-static.git"
   , "dnode": "*"
   , "cradle": "*"
   , "password-hash": "*"
