@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <title>IRCBird</title>
+    <link rel='stylesheet' href='/css/bootstrap.min.css'>
+    <link rel='stylesheet' href='/css/ircbird.css'>
+  </head>
+
+  <body>
+    <!--
+      Most of layout was shamelessly stolen from Bootstrap example. It is
+      available here:
+      http://twitter.github.com/bootstrap/examples/container-app.html
+    -->
+
+    <div class='topbar'>
+      <div class='fill'>
+        <div class='container'>
+          <a class='brand' href='#'>IRCBird</a>
+          <form action='' class='pull-right'>
+            <input class='input-small' type='text' placeholder='Username'>
+            <input class='input-small' type='password' placeholder='Password'>
+            <button class='btn' type='submit'>Sign in</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class='container'>
+      <div class='content'>
+        <div class='page-header'>
+          <h1>Command center</h1>
+        </div>
+        <div class='row'>
+          <div id='log' class='span10'>
+          </div>
+          <div id='people' class='span4'>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+
