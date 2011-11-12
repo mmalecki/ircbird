@@ -1,16 +1,16 @@
 view = {};
 
-view.encodeChannelName = function (channel) {
-  return 'channel-' + (channel[0] == '#') ? channel.slice(1) : channel;
+view.encodeTabName = function (item) {
+  return item[0] == '#' ? 'channel-' + item.slice(1) : 'pm-' + item;
 };
 
-view.addChannel = function (channel) {
+view.addTab = function (item) {
   var logTabs = $('#log-tabs');
   var logContent = $('#log-content');
 
-  var encoded = view.encodeChannelName(channel);
+  var encoded = view.encodeTabName(item);
   logTabs.append('<li id="log-tab-' + encoded + '"><a href="#log-' + encoded +
-                 '">' + channel + '</a></li>');
+                 '">' + item + '</a></li>');
 
   logContent.append('<div class="tab-pane" id="log-' + encoded + '"></div>');
 };
