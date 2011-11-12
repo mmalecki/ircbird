@@ -9,10 +9,11 @@ view.addTab = function (item) {
   var logContent = $('#log-content');
 
   var encoded = view.encodeTabName(item);
-  logTabs.append('<li id="log-tab-' + encoded + '"><a href="#log-' + encoded +
+  logTabs.append('<li data-item="' + item + '"><a href="#log-' + encoded +
                  '">' + item + '</a></li>');
 
-  logContent.append('<div class="tab-pane" id="log-' + encoded + '"></div>');
+  logContent.append('<div data-item="' + item + '" class="tab-pane" id="log-' +
+                    encoded + '"></div>');
 };
 
 view.log = function (from, to,  msg) {
