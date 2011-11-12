@@ -7,6 +7,7 @@
     <link rel='stylesheet' href='/css/ircbird.css'>
     <script src='/dnode.js'></script>
     <script src='/js/jquery-1.7.min.js'></script>
+    <script src='/js/bootstrap-tabs.js' async></script>
     <script src='/js/view.js' async></script>
     <script src='/js/presenter.js' async></script>
   </head>
@@ -38,6 +39,14 @@
         </div>
         <div class='row'>
           <div id='log' class='span10'>
+            <ul id="log-tabs" class="tabs" data-tabs="tabs">
+              <li class="active"><a href="#log-ircbird">IRCBird</a></li>
+            </ul>
+            <div id="log-content" class="tab-content">
+              <div class="tab-pane active" id="log-ircbird">
+                <h1>Welcome to IRCBird.</h1>
+              </div>
+            </div>
           </div>
           <div id='people' class='span4'>
           </div>
