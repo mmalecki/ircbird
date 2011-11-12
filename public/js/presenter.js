@@ -5,6 +5,12 @@ DNode.connect(function (remote) {
   presenter.remote = remote;
 });
 
+presenter._listeners = function () {
+  presenter.irc.on('message', function (from, to, msg) {
+    view.log(from, to, msg);
+  });
+};
+
 presenter.login = function (username, password, callback) {
   presenter.remote.getClient(username, password, function (err, irc) {
     if (err) {
@@ -13,6 +19,7 @@ presenter.login = function (username, password, callback) {
     }
     else {
       presenter.irc = irc;
+      presenter._listeners();
     }
     callback(err);
   });
