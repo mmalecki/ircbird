@@ -42,3 +42,8 @@ view.login = function () {
 
 $('#login-form').submit(view.login);
 
+view.tabChanged = function (e) {
+  view.currentItem = e.target.parentElement.getAttribute('data-item');
+};
+$('#log-tabs').change(view.tabChanged);
+
