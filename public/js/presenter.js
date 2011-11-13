@@ -9,6 +9,9 @@ presenter._listeners = function () {
   presenter.irc.on('message', function (from, to, msg) {
     view.log(from, to, msg);
   });
+  presenter.irc.on('selfMessage', function (to, msg) {
+    view.log(presenter.irc.nick, to, msg);
+  });
 };
 
 presenter.login = function (username, password, callback) {
