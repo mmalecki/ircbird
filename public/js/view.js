@@ -39,7 +39,6 @@ view.login = function () {
   );
   return false;
 };
-
 $('#login-form').submit(view.login);
 
 view.say = function () {
