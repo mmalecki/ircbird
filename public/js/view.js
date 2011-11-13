@@ -1,5 +1,9 @@
 var view = {};
 
+view.escapeHTML = function (text) {
+  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+};
+
 view.encodeTabName = function (item) {
   return item[0] == '#' ? 'channel-' + item.slice(1) : 'pm-' + item;
 };
@@ -21,7 +25,8 @@ view.addTab = function (item) {
 view.log = function (from, to,  msg) {
   // TODO: redesign it to use plate
   var tab = (to[0] == '#') ? to : from;
-  $('div[data-item="' + tab + '"]').append(from + ': ' + msg + '<br />');
+  $('div[data-item="' + tab + '"]').append(view.escapeHTML(from) + ': ' +
+                                           view.escapeHTML(msg) + '<br />');
 };
 
 view.login = function () {
