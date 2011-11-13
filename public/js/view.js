@@ -24,9 +24,13 @@ view.addTab = function (item) {
 
 view.log = function (from, to,  msg) {
   // TODO: redesign it to use plate
-  var tab = (to[0] == '#') ? to : from;
-  $('div[data-item="' + tab + '"]').append(view.escapeHTML(from) + ': ' +
-                                           view.escapeHTML(msg) + '<br />');
+  var tab = (to[0] == '#' || from == presenter.irc.nick) ? to : from;
+  var tabDiv = $('div[data-item="' + tab + '"]');
+  if (!tabDiv.length) {
+    view.addTab(tab);
+    tabDiv = $('div[data-item="' + tab + '"]');
+  }
+  tabDiv.append(view.escapeHTML(from) + ': ' + view.escapeHTML(msg) + '<br />');
 };
 
 view.login = function () {
