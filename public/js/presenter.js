@@ -32,3 +32,8 @@ presenter.say = function (to, msg) {
   presenter.irc.say(to, msg);
 };
 
+presenter.join = function (channel, callback) {
+  presenter.irc.join(channel, callback);
+  view.addTab(channel);
+};
+
