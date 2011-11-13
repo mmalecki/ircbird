@@ -42,6 +42,14 @@ view.login = function () {
 
 $('#login-form').submit(view.login);
 
+view.say = function () {
+  var sayInput = $('#say-input');
+  presenter.say(view.currentItem, sayInput.val());
+  sayInput.val('');
+  return false;
+};
+$('#say-form').submit(view.say);
+
 view.tabChanged = function (e) {
   view.currentItem = e.target.parentElement.getAttribute('data-item');
 };
