@@ -22,6 +22,10 @@ view.addTab = function (item) {
   }
 };
 
+view.renderLog = function (from, msg) {
+  return view.escapeHTML(from) + ': ' + view.escapeHTML(msg) + '<br />';
+};
+
 view.log = function (from, to,  msg) {
   // TODO: redesign it to use plate
   var tab = (to[0] == '#' || from == presenter.irc.nick) ? to : from;
@@ -30,7 +34,11 @@ view.log = function (from, to,  msg) {
     view.addTab(tab);
     tabDiv = $('div[data-item="' + tab + '"]');
   }
-  tabDiv.append(view.escapeHTML(from) + ': ' + view.escapeHTML(msg) + '<br />');
+  tabDiv.append(view.renderLog(from, msg));
+};
+
+view.logServer = function (from, msg) {
+  $('div#log-ircbird').append(view.renderLog(from, msg));
 };
 
 view.login = function () {
@@ -41,10 +49,10 @@ view.login = function () {
     function (err) {
       if (err) {
         // TODO: redesign it to use modals
-        view.log('IRCBird', 'Login failed', 'error');
+        view.logServer('IRCBird', 'Login failed');
       }
       else {
-        view.log('IRCBird', 'Successfully connected to server', 'success');
+        view.logServer('IRCBird', 'Successfully connected to server');
       }
     }
   );
