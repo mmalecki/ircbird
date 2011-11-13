@@ -5,15 +5,17 @@ view.encodeTabName = function (item) {
 };
 
 view.addTab = function (item) {
-  var logTabs = $('#log-tabs');
-  var logContent = $('#log-content');
+  if (!$('[data-item="' + item + '"]').length) {
+    var logTabs = $('#log-tabs');
+    var logContent = $('#log-content');
 
-  var encoded = view.encodeTabName(item);
-  logTabs.append('<li data-item="' + item + '"><a href="#log-' + encoded +
-                 '">' + item + '</a></li>');
+    var encoded = view.encodeTabName(item);
+    logTabs.append('<li data-item="' + item + '"><a href="#log-' + encoded +
+                   '">' + item + '</a></li>');
 
-  logContent.append('<div data-item="' + item + '" class="tab-pane" id="log-' +
-                    encoded + '"></div>');
+    logContent.append('<div data-item="' + item + '" class="tab-pane" id="log-' +
+                      encoded + '"></div>');
+  }
 };
 
 view.log = function (from, to,  msg) {
