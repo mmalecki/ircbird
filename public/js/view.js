@@ -19,7 +19,7 @@ view.addTab = function (item) {
 view.log = function (from, to,  msg) {
   // TODO: redesign it to use plate
   var tab = (to[0] == '#') ? to : from;
-  $('#log-' + view.encodeTabName(tab)).append(from + ': ' + msg + '<br />');
+  $('div[data-item="' + tab + '"]').append(from + ': ' + msg + '<br />');
 };
 
 view.login = function () {
