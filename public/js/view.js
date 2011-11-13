@@ -1,4 +1,4 @@
-view = {};
+var view = {};
 
 view.encodeTabName = function (item) {
   return item[0] == '#' ? 'channel-' + item.slice(1) : 'pm-' + item;
