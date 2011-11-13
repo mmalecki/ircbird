@@ -25,3 +25,7 @@ presenter.login = function (username, password, callback) {
   });
 };
 
+presenter.say = function (to, msg) {
+  presenter.irc.say(to, msg);
+};
+
