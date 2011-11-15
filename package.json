@@ -19,6 +19,7 @@
   , "equality": "*"
   , "ignoring-deep-equals": "*"
   , "hat": "*"
+  , "relax": "*"
   },
   "devDependencies": {}
 }
