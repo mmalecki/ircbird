@@ -10,6 +10,11 @@ view.encodeTabName = function (item) {
   return item[0] == '#' ? 'channel-' + item.slice(1) : 'pm-' + item;
 };
 
+view.colorWrap = function(item, thingToHash) {
+  if (thingToHash == null) thingToHash = item
+  return '<span style="color: ' + require('colorhash')(thingToHash, 'css') + '">' + item + '</span>'
+};
+
 view.addTab = function (item) {
   if (!$('[data-item="' + item + '"]').length) {
     var logTabs = $('#log-tabs');
@@ -28,10 +33,14 @@ view.addTab = function (item) {
   }
 };
 
-view.renderLog = function (from, msg) {
+view.renderLog = function (from, msg, to) {
   from = view.escapeHTML(from);
   msg = view.escapeHTML(msg);
-  from = '<span style="color: ' + require('colorhash')(from, 'css') + '">' + from + '</span>';
+  from = view.colorWrap(from, from);
+  if (to && to[0] === '#') {
+    var users = Object.keys(presenter.chans[to].users)
+    msg = replaceAllAll(msg, users, view.colorWrap)
+  }
   return from + ': ' + msg + '<br />';
 };
 
@@ -46,7 +55,7 @@ view.log = function (from, to,  msg) {
   }
   var scrollManager = scrollManagers[tab];
   var textDiv = scrollManager.textHolder;
-  textDiv.append(view.renderLog(from, msg));
+  textDiv.append(view.renderLog(from, msg, to));
   scrollManager.afterAppend();
 };
 
@@ -61,10 +70,8 @@ view.error = function(err) {
 
 view.login = function () {
   console.log('Logging in');
-  presenter.login(
-    $('#login-username').val(),
-    $('#login-password').val(),
-    function (chan) {
+  handlers =
+  { onNewChan: function (chan) {
       console.log('we joined '+chan+', fetching logs...');
       presenter.remote.fetchLastChatlines('irc.freenode.net', chan, function(err, lines) {
         if (err) throw err;
@@ -82,7 +89,12 @@ view.login = function () {
         scrollManagers[chan].scrollToEnd();
         $('#log-'+view.encodeTabName(chan)).css('display', '');
       });
-    },
+    }
+  };
+  presenter.login(
+    $('#login-username').val(),
+    $('#login-password').val(),
+    handlers,
     function (err) {
       if (err) {
         // TODO: redesign it to use modals
@@ -111,6 +123,27 @@ view.tabChanged = function (e) {
 $('#log-tabs').change(view.tabChanged);
 
 
+function replaceAll(text, needle, replacement) {
+  var out = ""
+    , index
+  while ((index = text.indexOf(needle)) !== -1) {
+    out += text.slice(0, index)
+    if (text.indexOf('>') < text.indexOf('<') || text.indexOf('<') === -1 && text.indexOf('>') !== -1) {
+      out += needle
+    } else {
+      out += typeof replacement === 'function' ? replacement(needle) : replacement
+    }
+    text = text.slice(index + needle.length)
+  }
+  return out + text;
+}
+
+function replaceAllAll(text, needles, replacement) {
+  needles.forEach(function(needle) {
+    text = replaceAll(text, needle, replacement)
+  })
+  return text
+}
 
 // CLASS: ScrollableBox
 var SCROLL_LENGTH = 20;

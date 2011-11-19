@@ -5,24 +5,46 @@ DNode.connect(function (remote) {
   presenter.remote = remote;
 });
 
-presenter._listeners = function () {
-  presenter.irc.on('message', function (from, to, msg) {
+presenter.login = function (username, password, handlers, callback) {
+  ['message', 'selfMessage', 'nick', 'topic', 'join', 'part', 'kick', 'quit', 'kill'].forEach(function(eventName) {
+    if (!handlers[eventName]) handlers[eventName] = []
+    if (typeof handlers[eventName] === 'function') handlers[eventName] = [handlers[eventName]]
+  })
+  handlers.message.push(function (from, to, msg) {
     view.log(from, to, msg);
-  });
-  presenter.irc.on('selfMessage', function (to, msg) {
+  })
+  handlers.selfMessage.push(function (to, msg) {
     view.log(presenter.irc.nick, to, msg);
-  });
-};
-
-presenter.login = function (username, password, onNewChan, callback) {
-  presenter.remote.getClient(username, password, onNewChan, function (err, irc) {
+  })
+  handlers.join.push(function(channel, nick) {
+    presenter.chans[channel].users[nick] = ''
+  })
+  handlers.nick.push(function(oldNick, newNick, channels) {
+    channels.forEach(function(channel) {
+      presenter.chans[channel].users[newNick] = presenter.chans[channel].users[oldNick]
+      delete presenter.chans[channel].users[oldNick]
+    })
+  })
+  function disappearFromChannel(channel, nick) {
+    delete presenter.chans[channel].users[nick]
+  }
+  handlers.part.push(disappearFromChannel)
+  handlers.kick.push(disappearFromChannel)
+  // FIXME we need KILL support!
+  function disappearFromServer(nick, reason, channels) {
+    channels.forEach(function(channel) {
+      delete presenter.chans[channel].users[nick]
+    })
+  }
+  handlers.quit.push(disappearFromServer)
+  presenter.remote.getClient(username, password, handlers, function (err, irc) {
     if (err) {
       console.error('Error while getting a client');
       console.error(err);
     }
     else {
       presenter.irc = irc;
-      presenter._listeners();
+      presenter.chans = irc.chans;
     }
     callback(err);
   });
