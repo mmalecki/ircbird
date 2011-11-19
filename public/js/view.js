@@ -1,5 +1,6 @@
 var view = {};
 var scrollManagers = {};
+var activeChans = [];
 
 view.escapeHTML = function (text) {
   return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -34,6 +35,10 @@ view.renderLog = function (from, msg) {
 view.log = function (from, to,  msg) {
   // TODO: redesign it to use plate
   var tab = (to[0] == '#' || from == presenter.irc.nick) ? to : from;
+  if (to[0] === '#' && activeChans.indexOf(to) === -1) {
+    console.error('warning: message to '+to+' suppressed');
+    return;
+  }
   var tabDiv = $('div[data-item="' + tab + '"]');
   if (!tabDiv.length) {
     view.addTab(tab);
@@ -54,6 +59,19 @@ view.login = function () {
   presenter.login(
     $('#login-username').val(),
     $('#login-password').val(),
+    function (chan) {
+      console.log('we joined '+chan+', fetching logs...');
+      presenter.remote.fetchLastChatlines('irc.freenode.net', chan, function(err, lines) {
+        if (err) throw err;
+        console.log('got '+lines.length);
+        activeChans.push(chan);
+        lines.reverse().forEach(function(line) {
+          if (line.type === 'message') {
+            return view.log(line.user.nick, line.to, line.text);
+          }
+        });
+      });
+    },
     function (err) {
       if (err) {
         // TODO: redesign it to use modals

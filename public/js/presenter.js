@@ -14,8 +14,8 @@ presenter._listeners = function () {
   });
 };
 
-presenter.login = function (username, password, callback) {
-  presenter.remote.getClient(username, password, function (err, irc) {
+presenter.login = function (username, password, onNewChan, callback) {
+  presenter.remote.getClient(username, password, onNewChan, function (err, irc) {
     if (err) {
       console.error('Error while getting a client');
       console.error(err);
