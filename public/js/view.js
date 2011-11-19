@@ -36,18 +36,15 @@ view.log = function (from, to,  msg) {
   // TODO: redesign it to use plate
   var tab = (to[0] == '#' || from == presenter.irc.nick) ? to : from;
   if (to[0] === '#' && activeChans.indexOf(to) === -1) {
-    console.error('warning: message to '+to+' suppressed');
-    return;
+    return console.error('warning: message to '+to+' suppressed');
   }
-  var tabDiv = $('div[data-item="' + tab + '"]');
-  if (!tabDiv.length) {
+  if (!scrollManagers[tab]) {
     view.addTab(tab);
-    tabDiv = $('div[data-item="' + tab + '"]');
   }
-  var textDiv = tabDiv.find('.textHolder')
+  var scrollManager = scrollManagers[tab];
+  var textDiv = scrollManager.textHolder;
   textDiv.append(view.renderLog(from, msg));
-  if (!scrollManagers[tab]) console.error('cant find scroller for '+tab);
-  scrollManagers[tab].updateScrollbar();
+  scrollManager.updateScrollbar();
 };
 
 view.logServer = function (from, msg) {
@@ -137,16 +134,8 @@ ScrollableBox.prototype.getScaleFactor = function() {
 };
 
 ScrollableBox.prototype.scrollbarMove = function(diff) {
-  var viewHeight = this.container.innerHeight();
-  var textHeight = this.textHolder.innerHeight();
   var scaleFactor = this.getScaleFactor();
-  var pos = this.textHolder.position();
-  var scrollY = pos.top;
-  scrollY -= Math.round(diff / scaleFactor);
-  scrollY = Math.min(scrollY, 0);
-  scrollY = Math.max(scrollY, -(textHeight - viewHeight));
-  this.textHolder.css('top', scrollY);
-  this.updateScrollbar();
+  this.moveText(-diff / scaleFactor);
 };
 
 ScrollableBox.prototype.moveText = function(diff) {
