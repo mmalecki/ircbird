@@ -81,7 +81,7 @@ view.login = function () {
         if (!scrollManagers[chan]) {
           view.addTab(chan);
         }
-        lines.reverse().forEach(function(line) {
+        lines.forEach(function(line) {
           if (line.type === 'message') {
             return view.log(line.user.nick, line.to, line.text);
           }
