@@ -29,7 +29,10 @@ view.addTab = function (item) {
 };
 
 view.renderLog = function (from, msg) {
-  return view.escapeHTML(from) + ': ' + view.escapeHTML(msg) + '<br />';
+  from = view.escapeHTML(from);
+  msg = view.escapeHTML(msg);
+  from = '<span style="color: ' + require('colorhash')(from, 'css') + '">' + from + '</span>';
+  return from + ': ' + msg + '<br />';
 };
 
 view.log = function (from, to,  msg) {
