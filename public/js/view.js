@@ -62,11 +62,17 @@ view.login = function () {
         if (err) throw err;
         console.log('got '+lines.length);
         activeChans.push(chan);
+        if (!scrollManagers[chan]) {
+          view.addTab(chan);
+        }
         lines.reverse().forEach(function(line) {
           if (line.type === 'message') {
             return view.log(line.user.nick, line.to, line.text);
           }
         });
+        $('#log-'+view.encodeTabName(chan)).css('display', 'block');
+        scrollManagers[chan].scrollToEnd();
+        $('#log-'+view.encodeTabName(chan)).css('display', '');
       });
     },
     function (err) {
@@ -160,5 +166,13 @@ ScrollableBox.prototype.updateScrollbar = function() {
     
   this.scrollbarCurPos.css('top', scrollbarTop);
   this.scrollbarCurPos.height(scrollbarHeight);
+};
+
+ScrollableBox.prototype.scrollToEnd = function() {
+  var viewHeight = this.container.innerHeight();
+  var textHeight = this.textHolder.height();
+  console.log(textHeight)
+  this.textHolder.css('top', viewHeight - textHeight);
+  this.updateScrollbar();
 };
 // END OF CLASS
