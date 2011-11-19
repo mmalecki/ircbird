@@ -141,7 +141,6 @@ ScrollableBox.prototype.scrollbarMove = function(diff) {
 ScrollableBox.prototype.moveText = function(diff) {
   var viewHeight = this.container.innerHeight();
   var textHeight = this.textHolder.innerHeight();
-  var scaleFactor = this.getScaleFactor();
   var pos = this.textHolder.position();
   var scrollY = pos.top;
   scrollY += Math.round(diff);
