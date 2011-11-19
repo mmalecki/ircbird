@@ -29,7 +29,8 @@ view.addTab = function (item) {
                         '<div class="textHolder"></div>' +
                         '<div class="scrollbar"><div class="scrollbarCurPos"></div></div>' +
                       '</div></div>');
-    scrollManagers[item] = new ScrollableBox($('div[data-item="' + item + '"]').find('.scrollable-container'));
+    var tabPane = $('div[data-item="' + item + '"]');
+    scrollManagers[item] = new ScrollableBox(tabPane.find('.scrollable-container'), tabPane);
   }
 };
 
@@ -85,9 +86,7 @@ view.login = function () {
             return view.log(line.user.nick, line.to, line.text);
           }
         });
-        $('#log-'+view.encodeTabName(chan)).css('display', 'block');
         scrollManagers[chan].scrollToEnd();
-        $('#log-'+view.encodeTabName(chan)).css('display', '');
       });
     }
   };
@@ -149,10 +148,11 @@ function replaceAllAll(text, needles, replacement) {
 var SCROLL_LENGTH = 20;
 var AUTOSCROLL_LIMIT = 30;
 
-function ScrollableBox(container) {
+function ScrollableBox(container, hideable) {
   var self = this;
     
   this.container = container;
+  this.hideable = hideable;
   this.textHolder = this.container.find('.textHolder');
   this.scrollbar = this.container.find('.scrollbar');
   this.scrollbarCurPos = this.container.find('.scrollbarCurPos');
@@ -199,6 +199,7 @@ ScrollableBox.prototype.moveText = function(diff) {
 };
 
 ScrollableBox.prototype.updateScrollbar = function() {
+  this.hideable.css('display', 'block');
   var scrollY = this.textHolder.position().top;
   var viewHeight = this.container.innerHeight();
     
@@ -208,21 +209,26 @@ ScrollableBox.prototype.updateScrollbar = function() {
     
   this.scrollbarCurPos.css('top', scrollbarTop);
   this.scrollbarCurPos.height(scrollbarHeight);
+  this.hideable.css('display', '');
 };
 
 ScrollableBox.prototype.scrollToEnd = function() {
+  this.hideable.css('display', 'block');
   var viewHeight = this.container.innerHeight();
   var textHeight = this.textHolder.height();
   console.log(textHeight)
   this.textHolder.css('top', viewHeight - textHeight);
+  this.hideable.css('display', '');
   this.updateScrollbar();
 };
 
 ScrollableBox.prototype.afterAppend = function() {
+  this.hideable.css('display', 'block');
   var viewHeight = this.container.innerHeight();
   var textHeight = this.textHolder.height();
   var scrollY = this.textHolder.position().top;
   var bottomY = viewHeight - textHeight;
+  this.hideable.css('display', '');
   if (scrollY - bottomY < AUTOSCROLL_LIMIT) {
     this.scrollToEnd();
   } else {
