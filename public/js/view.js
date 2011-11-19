@@ -1,4 +1,5 @@
 var view = {};
+var scrollManagers = {};
 
 view.escapeHTML = function (text) {
   return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -18,7 +19,11 @@ view.addTab = function (item) {
                    '">' + item + '</a></li>');
 
     logContent.append('<div data-item="' + item + '" class="tab-pane" id="log-' +
-                      encoded + '"></div>');
+                      encoded + '"><div class="scrollable-container" id="log-container-'+encoded+'">' +
+                        '<div class="textHolder"></div>' +
+                        '<div class="scrollbar"><div class="scrollbarCurPos"></div></div>' +
+                      '</div></div>');
+    scrollManagers[item] = new ScrollableBox($('div[data-item="' + item + '"]').find('.scrollable-container'));
   }
 };
 
@@ -34,7 +39,10 @@ view.log = function (from, to,  msg) {
     view.addTab(tab);
     tabDiv = $('div[data-item="' + tab + '"]');
   }
-  tabDiv.append(view.renderLog(from, msg));
+  var textDiv = tabDiv.find('.textHolder')
+  textDiv.append(view.renderLog(from, msg));
+  if (!scrollManagers[tab]) console.error('cant find scroller for '+tab);
+  scrollManagers[tab].updateScrollbar();
 };
 
 view.logServer = function (from, msg) {
@@ -73,3 +81,78 @@ view.tabChanged = function (e) {
 };
 $('#log-tabs').change(view.tabChanged);
 
+
+
+// CLASS: ScrollableBox
+var SCROLL_LENGTH = 20;
+
+function ScrollableBox(container) {
+  var self = this;
+    
+  this.container = container;
+  this.textHolder = this.container.find('.textHolder');
+  this.scrollbar = this.container.find('.scrollbar');
+  this.scrollbarCurPos = this.container.find('.scrollbarCurPos');
+  
+  var mouseY = null;
+  this.scrollbarCurPos.mousedown(function(evt) {
+    mouseY = evt.pageY;
+  });
+  $(document).mouseup(function() {
+    mouseY = null;
+  });
+  this.scrollbarCurPos.mousemove(function(evt) {
+    if (mouseY != null) {
+      self.scrollbarMove(evt.pageY - mouseY);
+      mouseY = evt.pageY;
+    }
+  });
+  this.container.mousewheel(function(evt, delta) {
+    self.moveText(SCROLL_LENGTH*delta);
+  });
+}
+
+ScrollableBox.prototype.getScaleFactor = function() {
+  var viewHeight = this.container.innerHeight();
+  var textHeight = this.textHolder.innerHeight();
+  return viewHeight / textHeight;
+};
+
+ScrollableBox.prototype.scrollbarMove = function(diff) {
+  var viewHeight = this.container.innerHeight();
+  var textHeight = this.textHolder.innerHeight();
+  var scaleFactor = this.getScaleFactor();
+  var pos = this.textHolder.position();
+  var scrollY = pos.top;
+  scrollY -= Math.round(diff / scaleFactor);
+  scrollY = Math.min(scrollY, 0);
+  scrollY = Math.max(scrollY, -(textHeight - viewHeight));
+  this.textHolder.css('top', scrollY);
+  this.updateScrollbar();
+};
+
+ScrollableBox.prototype.moveText = function(diff) {
+  var viewHeight = this.container.innerHeight();
+  var textHeight = this.textHolder.innerHeight();
+  var scaleFactor = this.getScaleFactor();
+  var pos = this.textHolder.position();
+  var scrollY = pos.top;
+  scrollY += Math.round(diff);
+  scrollY = Math.min(scrollY, 0);
+  scrollY = Math.max(scrollY, -(textHeight - viewHeight));
+  this.textHolder.css('top', scrollY);
+  this.updateScrollbar();
+};
+
+ScrollableBox.prototype.updateScrollbar = function() {
+  var scrollY = this.textHolder.position().top;
+  var viewHeight = this.container.innerHeight();
+    
+  var scaleFactor = this.getScaleFactor();
+  var scrollbarHeight = scaleFactor * viewHeight;
+  var scrollbarTop = -scaleFactor * scrollY;
+    
+  this.scrollbarCurPos.css('top', scrollbarTop);
+  this.scrollbarCurPos.height(scrollbarHeight);
+};
+// END OF CLASS
