@@ -6,7 +6,7 @@ DNode.connect(function (remote) {
 });
 
 presenter.login = function (username, password, handlers, callback) {
-  ['message', 'selfMessage', 'nick', 'topic', 'join', 'part', 'kick', 'quit', 'kill'].forEach(function(eventName) {
+  ['onNewChan', 'message', 'selfMessage', 'nick', 'topic', 'join', 'part', 'kick', 'quit', 'kill', 'names', 'topic'].forEach(function(eventName) {
     if (!handlers[eventName]) handlers[eventName] = []
     if (typeof handlers[eventName] === 'function') handlers[eventName] = [handlers[eventName]]
   })
