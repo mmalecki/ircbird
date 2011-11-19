@@ -29,6 +29,19 @@ presenter.login = function (username, password, onNewChan, callback) {
 };
 
 presenter.say = function (to, msg) {
+  if (msg[0] === '/') {
+    var parts = msg.slice(1).split(' ');
+    var command = parts[0];
+    switch (command) {
+      case 'join':
+        presenter.join(parts[1]);
+        break;
+      default:
+        view.error(command+' is not a valid command');
+        break;
+    }
+    return;
+  }
   presenter.irc.say(to, msg);
 };
 

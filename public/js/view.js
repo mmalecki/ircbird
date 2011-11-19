@@ -54,6 +54,11 @@ view.logServer = function (from, msg) {
   $('div#log-ircbird').append(view.renderLog(from, msg));
 };
 
+// FIXME show a modal dialog or log to the current tab
+view.error = function(err) {
+  console.error(err);
+};
+
 view.login = function () {
   console.log('Logging in');
   presenter.login(
