@@ -44,7 +44,7 @@ view.log = function (from, to,  msg) {
   var scrollManager = scrollManagers[tab];
   var textDiv = scrollManager.textHolder;
   textDiv.append(view.renderLog(from, msg));
-  scrollManager.updateScrollbar();
+  scrollManager.afterAppend();
 };
 
 view.logServer = function (from, msg) {
@@ -106,6 +106,7 @@ $('#log-tabs').change(view.tabChanged);
 
 // CLASS: ScrollableBox
 var SCROLL_LENGTH = 20;
+var AUTOSCROLL_LIMIT = 30;
 
 function ScrollableBox(container) {
   var self = this;
@@ -174,5 +175,17 @@ ScrollableBox.prototype.scrollToEnd = function() {
   console.log(textHeight)
   this.textHolder.css('top', viewHeight - textHeight);
   this.updateScrollbar();
+};
+
+ScrollableBox.prototype.afterAppend = function() {
+  var viewHeight = this.container.innerHeight();
+  var textHeight = this.textHolder.height();
+  var scrollY = this.textHolder.position().top;
+  var bottomY = viewHeight - textHeight;
+  if (scrollY - bottomY < AUTOSCROLL_LIMIT) {
+    this.scrollToEnd();
+  } else {
+    this.updateScrollbar();
+  }
 };
 // END OF CLASS
