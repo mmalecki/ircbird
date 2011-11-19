@@ -16,6 +16,19 @@ presenter.login = function (username, password, handlers, callback) {
   handlers.selfMessage.push(function (to, msg) {
     view.log(presenter.irc.nick, to, msg);
   })
+  handlers.onNewChan.push(function(channel) {
+    if (!presenter.chans[channel]) {
+      presenter.chans[channel] = {users: {}};
+    }
+  })
+  handlers.names.push(function(channel, nicks) {
+    if (!presenter.chans[channel]) {
+      presenter.chans[channel] = {users: {}};
+    }
+    Object.keys(nicks).forEach(function(nick) {
+      presenter.chans[channel].users[nick] = nicks[nick]
+    })
+  })
   handlers.join.push(function(channel, nick) {
     presenter.chans[channel].users[nick] = ''
   })

@@ -39,7 +39,7 @@ view.renderLog = function (from, msg, to) {
   msg = view.escapeHTML(msg);
   from = view.colorWrap(from, from);
   if (to && to[0] === '#') {
-    var users = Object.keys(presenter.chans[to].users)
+    var users = Object.keys(((presenter.chans || {})[to] || {}).users || {})
     msg = replaceAllAll(msg, users, view.colorWrap)
   }
   return from + ': ' + msg + '<br />';
