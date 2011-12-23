@@ -1,4 +1,4 @@
-var presenter = {};
+var presenter = {chans: {}};
 
 DNode.connect(function (remote) {
   console.log('Connected to server');
@@ -17,36 +17,39 @@ presenter.login = function (username, password, handlers, callback) {
     view.log(presenter.irc.nick, to, msg);
   })
   handlers.onNewChan.push(function(channel) {
-    if (!presenter.chans[channel]) {
-      presenter.chans[channel] = {users: {}};
+    if (!presenter.chans[channel.toLowerCase()]) {
+      presenter.chans[channel.toLowerCase()] = {users: {}};
     }
+    view.addTab(channel)
   })
   handlers.names.push(function(channel, nicks) {
+    channel = channel.toLowerCase()
     if (!presenter.chans[channel]) {
       presenter.chans[channel] = {users: {}};
     }
     Object.keys(nicks).forEach(function(nick) {
-      presenter.chans[channel].users[nick] = nicks[nick]
+      presenter.chans[channel.toLowerCase()].users[nick] = nicks[nick]
     })
   })
   handlers.join.push(function(channel, nick) {
-    presenter.chans[channel].users[nick] = ''
+    presenter.chans[channel.toLowerCase()].users[nick] = ''
   })
   handlers.nick.push(function(oldNick, newNick, channels) {
     channels.forEach(function(channel) {
+      channel = channel.toLowerCase()
       presenter.chans[channel].users[newNick] = presenter.chans[channel].users[oldNick]
       delete presenter.chans[channel].users[oldNick]
     })
   })
   function disappearFromChannel(channel, nick) {
-    delete presenter.chans[channel].users[nick]
+    delete presenter.chans[channel.toLowerCase()].users[nick]
   }
   handlers.part.push(disappearFromChannel)
   handlers.kick.push(disappearFromChannel)
   // FIXME we need KILL support!
   function disappearFromServer(nick, reason, channels) {
     channels.forEach(function(channel) {
-      delete presenter.chans[channel].users[nick]
+      delete presenter.chans[channel.toLowerCase()].users[nick]
     })
   }
   handlers.quit.push(disappearFromServer)
@@ -57,7 +60,6 @@ presenter.login = function (username, password, handlers, callback) {
     }
     else {
       presenter.irc = irc;
-      presenter.chans = irc.chans;
     }
     callback(err);
   });
@@ -82,6 +84,5 @@ presenter.say = function (to, msg) {
 
 presenter.join = function (channel, callback) {
   presenter.irc.join(channel, callback);
-  view.addTab(channel);
 };
 

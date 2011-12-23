@@ -30,7 +30,7 @@ view.addTab = function (item) {
                         '<div class="scrollbar"><div class="scrollbarCurPos"></div></div>' +
                       '</div></div>');
     var tabPane = $('div[data-item="' + item + '"]');
-    scrollManagers[item] = new ScrollableBox(tabPane.find('.scrollable-container'), tabPane);
+    scrollManagers[item.toLowerCase()] = new ScrollableBox(tabPane.find('.scrollable-container'), tabPane);
   }
 };
 
@@ -48,13 +48,13 @@ view.renderLog = function (from, msg, to) {
 view.log = function (from, to,  msg) {
   // TODO: redesign it to use plate
   var tab = (to[0] == '#' || from == presenter.irc.nick) ? to : from;
-  if (to[0] === '#' && activeChans.indexOf(to) === -1) {
+  if (to[0] === '#' && activeChans.indexOf(to.toLowerCase()) === -1) {
     return console.error('warning: message to '+to+' suppressed');
   }
-  if (!scrollManagers[tab]) {
+  if (!scrollManagers[tab.toLowerCase()]) {
     view.addTab(tab);
   }
-  var scrollManager = scrollManagers[tab];
+  var scrollManager = scrollManagers[tab.toLowerCase()];
   var textDiv = scrollManager.textHolder;
   textDiv.append(view.renderLog(from, msg, to));
   scrollManager.afterAppend();
@@ -77,8 +77,8 @@ view.login = function () {
       presenter.remote.fetchLastChatlines('irc.freenode.net', chan, function(err, lines) {
         if (err) throw err;
         console.log('got '+lines.length);
-        activeChans.push(chan);
-        if (!scrollManagers[chan]) {
+        activeChans.push(chan.toLowerCase());
+        if (!scrollManagers[chan.toLowerCase()]) {
           view.addTab(chan);
         }
         lines.forEach(function(line) {
@@ -86,7 +86,7 @@ view.login = function () {
             return view.log(line.user.nick, line.to, line.text);
           }
         });
-        scrollManagers[chan].scrollToEnd();
+        scrollManagers[chan.toLowerCase()].scrollToEnd();
       });
     }
   };
