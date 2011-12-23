@@ -6,9 +6,23 @@ view.escapeHTML = function (text) {
   return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 };
 
-view.encodeTabName = function (item) {
-  return item[0] == '#' ? 'channel-' + item.slice(1) : 'pm-' + item;
-};
+view.hexify = function(text) {
+  var hexed = ''
+  for (var i=0; i<text.length; i++) {
+    var hexChar = text.charCodeAt(i).toString(16)
+    if (hexChar.length === 1) hexChar = '0'+hexChar
+    hexed += hexChar
+  }
+  return hexed
+}
+
+view.dehexify = function(hextext) {
+  var text = ''
+  for (var i=0; i<hextext.length; i+=2) {
+    text += String.fromCharCode(parseInt(hextext.slice(i, i+2), 16))
+  }
+  return text
+}
 
 view.colorWrap = function(item, thingToHash) {
   if (thingToHash == null) thingToHash = item
@@ -20,7 +34,7 @@ view.addTab = function (item) {
     var logTabs = $('#log-tabs');
     var logContent = $('#log-content');
 
-    var encoded = view.encodeTabName(item);
+    var encoded = view.hexify(item);
     logTabs.append('<li data-item="' + item + '"><a href="#log-' + encoded +
                    '">' + item + '</a></li>');
 
